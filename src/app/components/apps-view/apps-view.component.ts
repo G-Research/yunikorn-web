@@ -274,7 +274,6 @@ export class AppsViewComponent implements OnInit {
   ) {
     this.spinner.show();
 
-    console.log(this.scheduler);
     this.scheduler
       .fetchAppList(partitionName, queueName)
       .pipe(
