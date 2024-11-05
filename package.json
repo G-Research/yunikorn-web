@@ -9,6 +9,8 @@
     "test": "ng test",
     "watch": "ng build --watch --configuration development",
     "test:singleRun": "ng test --code-coverage --watch false",
+    "setenv": "npx --yes ts-node ./src/environments/setEnvironmentVariables.ts",
+    "setenv:prod": "npx --yes ts-node ./src/environments/setEnvironmentVariables.ts prod",
     "start:host": "ng serve --host 0.0.0.0",
     "build:prod": "ng build --configuration production",
     "start:srv": "json-server --watch json-db.json",
