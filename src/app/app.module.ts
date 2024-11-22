@@ -55,6 +55,7 @@ import { ContainerStatusComponent } from '@app/components/container-status/conta
 import { ContainerHistoryComponent } from '@app/components/container-history/container-history.component';
 import { QueueRackComponent } from '@app/components/queue-rack/queue-rack.component';
 import { AppsViewComponent } from '@app/components/apps-view/apps-view.component';
+import { AppsHistoryViewComponent } from '@app/components/apps-history-view/apps-history-view.component';
 import { NodesViewComponent } from '@app/components/nodes-view/nodes-view.component';
 import { HighlightSearchPipe } from '@app/components/nodes-view/highlighttable-search.pipe';
 import { ErrorViewComponent } from '@app/components/error-view/error-view.component';
@@ -79,6 +80,7 @@ import { MatChipsModule } from '@angular/material/chips';
     ContainerHistoryComponent,
     QueueRackComponent,
     AppsViewComponent,
+    AppsHistoryViewComponent,
     NodesViewComponent,
     HighlightSearchPipe,
     ErrorViewComponent,

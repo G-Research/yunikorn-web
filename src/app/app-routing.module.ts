@@ -26,6 +26,7 @@ import { AppsViewComponent } from './components/apps-view/apps-view.component';
 import { NodesViewComponent } from './components/nodes-view/nodes-view.component';
 import { StatusViewComponent } from './components/status-view/status-view.component';
 import { ErrorViewComponent } from './components/error-view/error-view.component';
+import { AppsHistoryViewComponent } from '@app/components/apps-history-view/apps-history-view.component';
 
 const appRoutes: Routes = [
   {
@@ -36,6 +37,11 @@ const appRoutes: Routes = [
   {
     path: 'applications',
     component: AppsViewComponent,
+    data: { breadcrumb: 'Applications' },
+  },
+  {
+    path: 'applications-history',
+    component: AppsHistoryViewComponent,
     data: { breadcrumb: 'Applications' },
   },
   {

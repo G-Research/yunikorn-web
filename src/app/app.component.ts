@@ -24,6 +24,7 @@ import { fromEvent } from 'rxjs';
 import { EventBusService, EventMap } from '@app/services/event-bus/event-bus.service';
 import { LicensesModalComponent } from '@app/components/licenses-modal/licenses-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { EnvconfigService } from '@app/services/envconfig/envconfig.service';
 
 @Component({
   selector: 'app-root',
@@ -33,17 +34,24 @@ import { MatDialog } from '@angular/material/dialog';
 export class AppComponent implements OnInit {
   isNavOpen = true;
   breadcrumbs: Array<{ label: string; url: string }> = [];
+  uhsEnabled = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private eventBus: EventBusService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private environmentService: EnvconfigService
   ) {}
 
   ngOnInit() {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       this.generateBreadcrumb();
+    });
+
+    this.environmentService.loadEnvConfig().then(() => {
+      this.uhsEnabled =
+        this.environmentService.getAllocationsDrawerComponentRemoteConfig() !== null;
     });
 
     fromEvent(window, 'resize')

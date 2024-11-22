@@ -38,7 +38,7 @@
         <span>Queues</span>
       </a>
     </li>
-    <li routerLinkActive="active">
+    <li  *ngIf="!uhsEnabled" routerLinkActive="active">
       <a routerLink="/queues-v2">
         <i class="fa fa-caret-right"></i>
         <i class="fa fa-sitemap" style="width: 16px"></i>
@@ -50,9 +50,9 @@
       </a>
     </li>
     <li routerLinkActive="active">
-      <a routerLink="/applications">
+      <a [routerLink]="uhsEnabled ? '/applications-history' : '/applications'">
         <i class="fa fa-caret-right"></i>
-        <i class="fa fa-indent"></i>
+        <i class="fa" [ngClass]="uhsEnabled ? 'fa-list-check' : 'fa-indent'"></i>
         <span>Applications</span>
       </a>
     </li>
