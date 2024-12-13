@@ -19,14 +19,17 @@
 export class PartitionInfo {
   name: string;
   value: string;
+  id: string;
 
-  constructor(name: string, value: string) {
+  constructor(name: string, value: string, id: string) {
     this.name = name;
     this.value = value;
+    this.id = id;
   }
 }
 
 export interface Partition {
+  id: string;
   name: string;
   state: string;
   clusterId: string;

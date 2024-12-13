@@ -171,12 +171,12 @@ export class AppsViewComponent implements OnInit {
       .subscribe((list) => {
         if (list && list.length > 0) {
           list.forEach((part) => {
-            this.partitionList.push(new PartitionInfo(part.name, part.name));
+            this.partitionList.push(new PartitionInfo(part.name, part.name, part.id));
           });
-          this.partitionSelected = CommonUtil.getStoredPartition(list[0].name);
+          this.partitionSelected = CommonUtil.getStoredPartition(list[0].id);
           this.fetchQueuesForPartition(this.partitionSelected);
         } else {
-          this.partitionList = [new PartitionInfo('-- Select --', '')];
+          this.partitionList = [new PartitionInfo('-- Select --', '', '')];
           this.partitionSelected = '';
           this.leafQueueList = [new DropdownItem('-- Select --', '')];
           this.leafQueueSelected = '';
@@ -211,11 +211,11 @@ export class AppsViewComponent implements OnInit {
     });
   }
 
-  fetchQueuesForPartition(partitionName: string) {
+  fetchQueuesForPartition(partitionId: string) {
     this.spinner.show();
 
     this.scheduler
-      .fetchSchedulerQueues(partitionName)
+      .fetchSchedulerQueues(CommonUtil.getNameFromId(partitionId, this.partitionList))
       .pipe(
         finalize(() => {
           this.spinner.hide();
@@ -243,9 +243,9 @@ export class AppsViewComponent implements OnInit {
     const [storedPartition, storedQueue] = storedPartitionAndQueue.split(':');
     if (this.partitionSelected !== storedPartition) return;
 
-    const storedQueueDropdownItem = queueList.find((queue) => queue.value === storedQueue);
+    const storedQueueDropdownItem = queueList.find((queue) => queue.id === storedQueue);
     if (storedQueueDropdownItem) {
-      this.leafQueueSelected = storedQueueDropdownItem.value;
+      this.leafQueueSelected = storedQueueDropdownItem.id;
       this.fetchAppListForPartitionAndQueue(this.partitionSelected, this.leafQueueSelected);
       return;
     } else {
@@ -257,7 +257,7 @@ export class AppsViewComponent implements OnInit {
 
   generateLeafQueueList(rootQueue: QueueInfo, list: DropdownItem[] = []): DropdownItem[] {
     if (rootQueue && rootQueue.isLeaf) {
-      list.push(new DropdownItem(rootQueue.queueName, rootQueue.queueName));
+      list.push(new DropdownItem(rootQueue.queueName, rootQueue.queueName, rootQueue.id));
     }
 
     if (rootQueue && rootQueue.children) {
@@ -267,13 +267,10 @@ export class AppsViewComponent implements OnInit {
     return list;
   }
 
-  fetchAppListForPartitionAndQueue(
-    partitionName: string,
-    queueName: string,
-    applicationId?: string
-  ) {
+  fetchAppListForPartitionAndQueue(partitionId: string, queueId: string, applicationId?: string) {
     this.spinner.show();
-
+    const partitionName = CommonUtil.getNameFromId(partitionId, this.partitionList);
+    const queueName = CommonUtil.getNameFromId(queueId, this.leafQueueList);
     this.scheduler
       .fetchAppList(partitionName, queueName)
       .pipe(
@@ -378,8 +375,9 @@ export class AppsViewComponent implements OnInit {
 
   onPartitionSelectionChanged(selected: MatSelectChange) {
     if (selected.value !== '') {
+      const partitionId = selected.value;
       this.searchText = '';
-      this.partitionSelected = selected.value;
+      this.partitionSelected = CommonUtil.getNameFromId(partitionId, this.partitionList);
       this.appDataSource.data = [];
       this.removeRowSelection();
       this.clearQueueSelection();

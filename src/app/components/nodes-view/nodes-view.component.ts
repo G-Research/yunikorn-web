@@ -114,13 +114,15 @@ export class NodesViewComponent implements OnInit {
       .subscribe((list) => {
         if (list && list.length > 0) {
           list.forEach((part) => {
-            this.partitionList.push(new PartitionInfo(part.name, part.name));
+            this.partitionList.push(new PartitionInfo(part.name, part.name, part.id));
           });
 
-          this.partitionSelected = CommonUtil.getStoredPartition(list[0].name);
-          this.fetchNodeListForPartition(this.partitionSelected);
+          this.partitionSelected = CommonUtil.getStoredPartition(list[0].id);
+          this.fetchNodeListForPartition(
+            CommonUtil.getNameFromId(this.partitionSelected, this.partitionList)
+          );
         } else {
-          this.partitionList = [new PartitionInfo('-- Select --', '')];
+          this.partitionList = [new PartitionInfo('-- Select --', '', '')];
           this.partitionSelected = '';
           this.nodeDataSource.data = [];
           CommonUtil.setStoredQueueAndPartition('');

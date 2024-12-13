@@ -89,14 +89,14 @@ export class QueuesViewComponent implements OnInit {
       .subscribe((list) => {
         if (list && list.length > 0) {
           list.forEach((part) => {
-            this.partitionList.push(new PartitionInfo(part.name, part.name));
+            this.partitionList.push(new PartitionInfo(part.name, part.name, part.id));
           });
 
-          this.partitionSelected = CommonUtil.getStoredPartition(list[0].name);
+          this.partitionSelected = CommonUtil.getStoredPartition(list[0].id);
 
           this.fetchSchedulerQueuesForPartition(this.partitionSelected);
         } else {
-          this.partitionList = [new PartitionInfo('-- Select --', '')];
+          this.partitionList = [new PartitionInfo('-- Select --', '', '')];
           this.partitionSelected = '';
           this.queueList = {};
           CommonUtil.setStoredQueueAndPartition('');
@@ -104,8 +104,9 @@ export class QueuesViewComponent implements OnInit {
       });
   }
 
-  fetchSchedulerQueuesForPartition(partitionName: string) {
+  fetchSchedulerQueuesForPartition(partitionId: string) {
     this.spinner.show();
+    const partitionName = CommonUtil.getNameFromId(partitionId, this.partitionList);
 
     this.scheduler
       .fetchSchedulerQueues(partitionName)

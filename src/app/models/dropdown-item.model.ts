@@ -19,9 +19,11 @@
 export class DropdownItem {
   name: string;
   value: string;
+  id: string;
 
-  constructor(name: string, value: string) {
+  constructor(name: string, value: string, id?: string) {
     this.name = name;
     this.value = value;
+    this.id = id || value;
   }
 }
