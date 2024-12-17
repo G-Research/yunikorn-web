@@ -176,7 +176,7 @@ export class AppsViewComponent implements OnInit {
           this.partitionSelected = CommonUtil.getStoredPartition(list[0].id);
           this.fetchQueuesForPartition(this.partitionSelected);
         } else {
-          this.partitionList = [new PartitionInfo('-- Select --', '', '')];
+          this.partitionList = [new PartitionInfo('-- Select --', '')];
           this.partitionSelected = '';
           this.leafQueueList = [new DropdownItem('-- Select --', '')];
           this.leafQueueSelected = '';

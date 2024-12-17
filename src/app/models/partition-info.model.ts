@@ -21,10 +21,10 @@ export class PartitionInfo {
   value: string;
   id: string;
 
-  constructor(name: string, value: string, id: string) {
+  constructor(name: string, value: string, id?: string) {
     this.name = name;
     this.value = value;
-    this.id = id;
+    this.id = id || value;
   }
 }
 
@@ -47,17 +47,17 @@ export interface Capacity {
 }
 
 export interface Applications {
-	New: number;
-	Accepted: number;
-	Starting: number;
-	Running: number;
-	Rejected: number;
-	Completing: number;
-	Completed: number;
-	Failing: number;
-	Failed: number;
-	Expired: number;
-	Resuming: number;
+  New: number;
+  Accepted: number;
+  Starting: number;
+  Running: number;
+  Rejected: number;
+  Completing: number;
+  Completed: number;
+  Failing: number;
+  Failed: number;
+  Expired: number;
+  Resuming: number;
   total: number;
 }
 
