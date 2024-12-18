@@ -1,21 +1,3 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AllocationInfo } from '@app/models/alloc-info.model';
@@ -54,8 +36,8 @@ export class SchedulerService {
     return this.httpClient.get(partitionUrl).pipe(map((data) => data as Partition[]));
   }
 
-  fetchSchedulerQueues(partitionName: string): Observable<any> {
-    const queuesUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/partition/${partitionName}/queues`;
+  fetchSchedulerQueues(partitionId: string): Observable<any> {
+    const queuesUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/partition/${partitionId}/queues`;
 
     return this.httpClient.get(queuesUrl).pipe(
       map((data: any) => {
@@ -84,8 +66,8 @@ export class SchedulerService {
     );
   }
 
-  fetchAppList(partitionName: string, queueName: string): Observable<AppInfo[]> {
-    const appsUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/partition/${partitionName}/queue/${queueName}/applications`;
+  fetchAppList(partitionId: string, queueId: string): Observable<AppInfo[]> {
+    const appsUrl = `${this.envConfig.getSchedulerWebAddress()}/api/v1/partition/${partitionId}/queue/${queueId}/applications`;
 
     return this.httpClient.get(appsUrl).pipe(
       map((data: any) => {
@@ -189,8 +171,8 @@ export class SchedulerService {
     );
   }
 
-  fetchNodeList(partitionName: string): Observable<NodeInfo[]> {
-    const nodesUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/partition/${partitionName}/nodes`;
+  fetchNodeList(partitionId: string): Observable<NodeInfo[]> {
+    const nodesUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/partition/${partitionId}/nodes`;
 
     return this.httpClient.get(nodesUrl).pipe(
       map((data: any) => {
