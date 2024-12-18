@@ -22,8 +22,8 @@
       <label class="dropdown-label">Partition: </label>
       <mat-form-field>
         <mat-select [(value)]="partitionSelected" (selectionChange)="onPartitionSelectionChanged($event)">
-          <mat-option *ngFor="let part of partitionList" [value]="part.value">
-            {{ part.name }}
+          <mat-option *ngFor="let part of partitionList" [value]="part.id">
+            {{ part.name }}{{ part.id ? ' [' + part.id.substring(0, 4) + '...' + part.id.substring(part.id.length - 4) + ']' : '' }}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -32,8 +32,8 @@
       <label class="dropdown-label">Queue: </label>
       <mat-form-field>
         <mat-select [(value)]="leafQueueSelected" (selectionChange)="onQueueSelectionChanged($event)" #queueSelect>
-          <mat-option *ngFor="let queue of leafQueueList" [value]="queue.value">
-            {{ queue.name }}
+          <mat-option *ngFor="let queue of leafQueueList" [value]="queue.id">
+            {{ queue.name }}{{ queue.id ? ' [' + queue.id.substring(0, 4) + '...' + queue.id.substring(queue.id.length - 4) + ']' : '' }}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -43,7 +43,7 @@
     <mat-form-field class="search-wrapper white-mat-form-field">
       <input matInput type="text" [(ngModel)]="searchText" placeholder="Search By Application ID" #searchInput />
       <button class="clear-btn" *ngIf="searchText" (click)="onClearSearch()" matTooltip="Clear Search"
-        matTooltipShowDelay="500">
+              matTooltipShowDelay="500">
         <i class="far fa-times-circle"></i>
       </button>
       <i *ngIf="!searchText" class="fas fa-search search-icon"></i>
@@ -64,12 +64,12 @@
 
         <ng-container *ngIf="columnDef.colId === 'submissionTime'; else renderNext_1">
           <mat-cell *matCellDef="let element" [style.flex]="columnDef.colWidth || 1">{{
-            element['formattedSubmissionTime'] }}</mat-cell>
+              element['formattedSubmissionTime'] }}</mat-cell>
         </ng-container>
 
         <ng-container *ngIf="columnDef.colId === 'lastStateChangeTime'; else renderNext_1">
           <mat-cell *matCellDef="let element" [style.flex]="columnDef.colWidth || 1">{{
-            element['formattedlastStateChangeTime'] }}</mat-cell>
+              element['formattedlastStateChangeTime'] }}</mat-cell>
         </ng-container>
 
         <ng-template #renderNext_1>
@@ -129,15 +129,15 @@
       <mat-header-row *matHeaderRowDef="appColumnIds"></mat-header-row>
 
       <mat-row *matRowDef="let row; columns: appColumnIds; let i = index" [class.selected-row]="selectedRow === row"
-        (click)="toggleRowSelection(row)" [ngClass]="{'even-row': i % 2 === 0, 'row': true}"></mat-row>
+               (click)="toggleRowSelection(row)" [ngClass]="{'even-row': i % 2 === 0, 'row': true}"></mat-row>
 
       <mat-footer-row *matFooterRowDef="['noRecord']"
-        [ngStyle]="{ display: isAppDataSourceEmpty() ? '' : 'none' }"></mat-footer-row>
+                      [ngStyle]="{ display: isAppDataSourceEmpty() ? '' : 'none' }"></mat-footer-row>
     </mat-table>
 
     <mat-paginator #appsViewMatPaginator [pageSizeOptions]="[10, 20, 50, 100]" pageSize="50"
-      [ngStyle]="{ display: isAppDataSourceEmpty() ? 'none' : '' }" (page)="onPaginatorChanged()"
-      showFirstLastButtons></mat-paginator>
+                   [ngStyle]="{ display: isAppDataSourceEmpty() ? 'none' : '' }" (page)="onPaginatorChanged()"
+                   showFirstLastButtons></mat-paginator>
   </div>
   <ng-container #drawerContainer></ng-container>
   <ng-container #mfeContainer></ng-container>

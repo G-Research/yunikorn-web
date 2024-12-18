@@ -24,8 +24,8 @@
         [(value)]="partitionSelected"
         (selectionChange)="onPartitionSelectionChanged($event)"
       >
-        <mat-option *ngFor="let part of partitionList" [value]="part.value">
-          {{ part.name }}
+        <mat-option *ngFor="let part of partitionList" [value]="part.id">
+          {{ part.name }}{{ part.id ? ' [' + part.id.substring(0, 8) + ']' : '' }}
         </mat-option>
       </mat-select>
     </mat-form-field>
