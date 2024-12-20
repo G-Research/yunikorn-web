@@ -38,6 +38,10 @@ export class ApiErrorInterceptor implements HttpInterceptor {
   }
 
   handleApiError(response: HttpErrorResponse) {
+    if (response.status === 404 && response.url?.includes('/applications')) {
+      return throwError(() => []);
+    }
+
     if (!this.router.url.startsWith('/error')) {
       this.router.navigate(['/error'], {
         queryParams: { last: this.router.url },

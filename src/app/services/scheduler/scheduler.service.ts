@@ -13,8 +13,8 @@ import { SchedulerResourceInfo } from '@app/models/resource-info.model';
 import { SchedulerHealthInfo } from '@app/models/scheduler-health-info.model';
 import { CommonUtil } from '@app/utils/common.util';
 import { NOT_AVAILABLE } from '@app/utils/constants';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { EnvconfigService } from '../envconfig/envconfig.service';
 
 @Injectable({
@@ -66,8 +66,13 @@ export class SchedulerService {
     );
   }
 
-  fetchAppList(partitionId: string, queueId: string): Observable<AppInfo[]> {
-    const appsUrl = `${this.envConfig.getSchedulerWebAddress()}/api/v1/partition/${partitionId}/queue/${queueId}/applications`;
+  fetchAppList(
+    partitionId: string,
+    queueId: string,
+    offset: number = 0,
+    limit: number = 10
+  ): Observable<AppInfo[]> {
+    const appsUrl = `${this.envConfig.getSchedulerWebAddress()}/v1/partition/${partitionId}/queue/${queueId}/applications?limit=${limit}&offset=${offset}`;
 
     return this.httpClient.get(appsUrl).pipe(
       map((data: any) => {
@@ -129,6 +134,10 @@ export class SchedulerService {
         }
 
         return result;
+      }),
+      catchError((error) => {
+        console.error('Error fetching app list:', error);
+        return of([]);
       })
     );
   }
