@@ -54,7 +54,6 @@ import { SchedulerServiceLoader } from '@app/services/scheduler/scheduler-loader
   styleUrls: ['./apps-history-view.component.scss'],
 })
 export class AppsHistoryViewComponent implements OnInit {
-  @ViewChild('appsViewMatPaginator', { static: true }) appPaginator!: MatPaginator;
   @ViewChild('allocationMatPaginator', { static: true }) allocPaginator!: MatPaginator;
   @ViewChild('appSort', { static: true }) appSort!: MatSort;
   @ViewChild('allocSort', { static: true }) allocSort!: MatSort;
@@ -86,6 +85,10 @@ export class AppsHistoryViewComponent implements OnInit {
   detailToggle: boolean = false;
   allocationsDrawerComponent: ComponentRef<AllocationsDrawerComponent> | undefined = undefined;
 
+  pageSize = 5;
+  pageIndex = 0;
+  hasNextPage = true; // Add this to track if there are more items
+
   constructor(
     private schedulerServiceLoader: SchedulerServiceLoader,
     private scheduler: SchedulerService,
@@ -96,7 +99,6 @@ export class AppsHistoryViewComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.appDataSource.paginator = this.appPaginator;
     this.allocDataSource.paginator = this.allocPaginator;
     this.appDataSource.sort = this.appSort;
     this.allocDataSource.sort = this.allocSort;
@@ -271,21 +273,30 @@ export class AppsHistoryViewComponent implements OnInit {
 
   fetchAppListForPartitionAndQueue(partitionId: string, queueId: string, applicationId?: string) {
     this.spinner.show();
+    const limit = this.pageSize;
+    const offset = this.pageIndex * this.pageSize;
+
     this.scheduler
-      .fetchAppList(partitionId, queueId)
+      .fetchAppList(partitionId, queueId, limit, offset)
       .pipe(
         finalize(() => {
           this.spinner.hide();
         })
       )
-      .subscribe((data) => {
-        this.initialAppData = data;
-        this.appDataSource.data = data;
-
-        const row = this.initialAppData.find((app) => app.applicationId === applicationId);
-        if (row) {
-          this.toggleRowSelection(row);
-        }
+      .subscribe({
+        next: (data) => {
+          if (data.length === 0) {
+            this.hasNextPage = false;
+            return;
+          }
+          this.initialAppData = data;
+          this.appDataSource.data = data;
+          this.hasNextPage = data.length === limit;
+          const row = this.initialAppData.find((app) => app.applicationId === applicationId);
+          if (row) {
+            this.toggleRowSelection(row);
+          }
+        },
       });
   }
 
@@ -346,8 +357,11 @@ export class AppsHistoryViewComponent implements OnInit {
     }
   }
 
-  onPaginatorChanged() {
+  onPaginatorChanged(event: any) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
     this.removeRowSelection();
+    this.fetchAppListForPartitionAndQueue(this.partitionSelected, this.leafQueueSelected);
   }
 
   isAppDataSourceEmpty() {
@@ -356,20 +370,22 @@ export class AppsHistoryViewComponent implements OnInit {
 
   onClearSearch() {
     this.searchText = '';
+    this.pageIndex = 0;
     this.removeRowSelection();
-    this.appDataSource.data = this.initialAppData;
+    this.fetchAppListForPartitionAndQueue(this.partitionSelected, this.leafQueueSelected);
   }
 
   onSearchAppData() {
     const searchTerm = this.searchText.trim().toLowerCase();
+    this.pageIndex = 0;
+    this.removeRowSelection();
 
     if (searchTerm) {
-      this.removeRowSelection();
       this.appDataSource.data = this.initialAppData.filter((data) =>
         data.applicationId.toLowerCase().includes(searchTerm)
       );
     } else {
-      this.onClearSearch();
+      this.fetchAppListForPartitionAndQueue(this.partitionSelected, this.leafQueueSelected);
     }
   }
 
