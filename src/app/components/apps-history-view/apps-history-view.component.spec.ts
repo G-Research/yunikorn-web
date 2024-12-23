@@ -92,6 +92,7 @@ describe('AppsViewComponent', () => {
     let service: SchedulerService;
     service = TestBed.inject(SchedulerService);
     let appInfo = new AppInfo(
+      'id1',
       'app1',
       'Memory: 500.0 KB, CPU: 10, pods: 1',
       'Memory: 0.0 bytes, CPU: 0, pods: n/a',
@@ -121,6 +122,7 @@ describe('AppsViewComponent', () => {
     let service: SchedulerService;
     service = TestBed.inject(SchedulerService);
     let appInfo = new AppInfo(
+      'id2',
       'app1',
       'Memory: 500.0 KB, CPU: 10, pods: 1',
       'Memory: 0.0 bytes, CPU: 0, pods: n/a',
@@ -151,6 +153,7 @@ describe('AppsViewComponent', () => {
     let service: SchedulerService;
     service = TestBed.inject(SchedulerService);
     let appInfo = new AppInfo(
+      'id3',
       'app1',
       'Memory: 500.0 KB, CPU: 10, pods: 1',
       'Memory: 0.0 bytes, CPU: 0, pods: n/a',
