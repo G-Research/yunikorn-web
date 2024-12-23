@@ -40,6 +40,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AppRoutingModule } from '@app/app-routing.module';
 import { envConfigFactory, EnvconfigService } from '@app/services/envconfig/envconfig.service';
@@ -117,6 +118,7 @@ import { MatChipsModule } from '@angular/material/chips';
     MatIconModule,
     MatDialogModule,
     MatChipsModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
     {

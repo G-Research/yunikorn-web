@@ -99,7 +99,7 @@
   </div>
 </div>
 <div class="apps-view">
-  <div class="mat-elevation-z8">
+  <div class="mat-elevation-z8" #scrollContainer (scroll)="onScroll($event)">
     <mat-table [dataSource]="appDataSource" matSort #appSort="matSort">
       <ng-container [matColumnDef]="columnDef.colId" *ngFor="let columnDef of appColumnDef">
         <mat-header-cell *matHeaderCellDef mat-sort-header [style.flex]="columnDef.colWidth || 1">{{
@@ -191,17 +191,9 @@
       ></mat-footer-row>
     </mat-table>
 
-    <mat-paginator
-      [pageSizeOptions]="[10, 20, 50, 100]"
-      [pageSize]="pageSize"
-      [pageIndex]="pageIndex"
-      [hidePageSize]="false"
-      [showFirstLastButtons]="false"
-      [ngStyle]="{ display: isAppDataSourceEmpty() ? 'none' : '' }"
-      [length]="hasNextPage ? (pageIndex + 2) * pageSize : pageIndex * pageSize"
-      (page)="onPaginatorChanged($event)"
-    >
-    </mat-paginator>
+    <div class="loading-spinner" *ngIf="isLoading">
+      <mat-spinner diameter="30"></mat-spinner>
+    </div>
   </div>
   <ng-container #drawerContainer></ng-container>
   <ng-container #mfeContainer></ng-container>
