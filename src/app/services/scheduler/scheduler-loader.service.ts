@@ -36,9 +36,11 @@ export class SchedulerServiceLoader {
         if (remoteModule && remoteModule.SchedulerService) {
           return this.injector.get(remoteModule.SchedulerService);
         } else {
+          console.error('SchedulerService not found in remote module');
           return null;
         }
       } catch (error) {
+        console.error('Error loading the remote module:', error);
         return null;
       }
     }

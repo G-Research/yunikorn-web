@@ -22,6 +22,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HAMMER_LOADER } from '@angular/platform-browser';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { AppComponent } from './app.component';
 import { EventBusService } from './services/event-bus/event-bus.service';
@@ -35,7 +36,13 @@ describe('AppComponent', () => {
   beforeAll(() => {
     TestBed.configureTestingModule({
       declarations: [AppComponent],
-      imports: [RouterTestingModule, NgxSpinnerModule, MatMenuModule, MatTooltipModule],
+      imports: [
+        RouterTestingModule,
+        NgxSpinnerModule,
+        MatMenuModule,
+        MatTooltipModule,
+        HttpClientTestingModule,
+      ],
       providers: [
         { provide: EventBusService, useValue: MockEventBusService },
         { provide: HAMMER_LOADER, useValue: () => new Promise(() => {}) },
