@@ -54,7 +54,6 @@ import { SchedulerServiceLoader } from '@app/services/scheduler/scheduler-loader
   styleUrls: ['./apps-history-view.component.scss'],
 })
 export class AppsHistoryViewComponent implements OnInit {
-  @ViewChild('appsViewMatPaginator', { static: true }) appPaginator!: MatPaginator;
   @ViewChild('allocationMatPaginator', { static: true }) allocPaginator!: MatPaginator;
   @ViewChild('appSort', { static: true }) appSort!: MatSort;
   @ViewChild('allocSort', { static: true }) allocSort!: MatSort;
@@ -66,6 +65,8 @@ export class AppsHistoryViewComponent implements OnInit {
 
   @ViewChild('mfeContainer', { read: ViewContainerRef, static: true })
   mfeContainer!: ViewContainerRef;
+
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
   appDataSource = new MatTableDataSource<AppInfo>([]);
   appColumnDef: ColumnDef[] = [];
@@ -86,6 +87,11 @@ export class AppsHistoryViewComponent implements OnInit {
   detailToggle: boolean = false;
   allocationsDrawerComponent: ComponentRef<AllocationsDrawerComponent> | undefined = undefined;
 
+  pageSize = 50;
+  pageIndex = 0;
+  isLoading = false;
+  hasNextPage = true;
+
   constructor(
     private schedulerServiceLoader: SchedulerServiceLoader,
     private scheduler: SchedulerService,
@@ -96,7 +102,6 @@ export class AppsHistoryViewComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.appDataSource.paginator = this.appPaginator;
     this.allocDataSource.paginator = this.allocPaginator;
     this.appDataSource.sort = this.appSort;
     this.allocDataSource.sort = this.allocSort;
@@ -171,10 +176,12 @@ export class AppsHistoryViewComponent implements OnInit {
       .subscribe((list) => {
         if (list && list.length > 0) {
           list.forEach((part) => {
-            this.partitionList.push(new PartitionInfo(part.name, part.name));
+            this.partitionList.push(new PartitionInfo(part.name, part.name, part.id));
           });
-          this.partitionSelected = CommonUtil.getStoredPartition(list[0].name);
-          this.fetchQueuesForPartition(this.partitionSelected);
+          const selectedPartitionId = CommonUtil.getStoredPartition(list[0].id);
+          console.log('selectedPartitionId', selectedPartitionId);
+          this.partitionSelected = selectedPartitionId;
+          this.fetchQueuesForPartition(selectedPartitionId);
         } else {
           this.partitionList = [new PartitionInfo('-- Select --', '')];
           this.partitionSelected = '';
@@ -211,11 +218,11 @@ export class AppsHistoryViewComponent implements OnInit {
     });
   }
 
-  fetchQueuesForPartition(partitionName: string) {
+  fetchQueuesForPartition(partitionId: string) {
     this.spinner.show();
 
     this.scheduler
-      .fetchSchedulerQueues(partitionName)
+      .fetchSchedulerQueues(partitionId)
       .pipe(
         finalize(() => {
           this.spinner.hide();
@@ -243,9 +250,9 @@ export class AppsHistoryViewComponent implements OnInit {
     const [storedPartition, storedQueue] = storedPartitionAndQueue.split(':');
     if (this.partitionSelected !== storedPartition) return;
 
-    const storedQueueDropdownItem = queueList.find((queue) => queue.value === storedQueue);
+    const storedQueueDropdownItem = queueList.find((queue) => queue.id === storedQueue);
     if (storedQueueDropdownItem) {
-      this.leafQueueSelected = storedQueueDropdownItem.value;
+      this.leafQueueSelected = storedQueueDropdownItem.id;
       this.fetchAppListForPartitionAndQueue(this.partitionSelected, this.leafQueueSelected);
       return;
     } else {
@@ -257,7 +264,7 @@ export class AppsHistoryViewComponent implements OnInit {
 
   generateLeafQueueList(rootQueue: QueueInfo, list: DropdownItem[] = []): DropdownItem[] {
     if (rootQueue && rootQueue.isLeaf) {
-      list.push(new DropdownItem(rootQueue.queueName, rootQueue.queueName));
+      list.push(new DropdownItem(rootQueue.queueName, rootQueue.queueName, rootQueue.id));
     }
 
     if (rootQueue && rootQueue.children) {
@@ -267,28 +274,37 @@ export class AppsHistoryViewComponent implements OnInit {
     return list;
   }
 
-  fetchAppListForPartitionAndQueue(
-    partitionName: string,
-    queueName: string,
-    applicationId?: string
-  ) {
+  fetchAppListForPartitionAndQueue(partitionId: string, queueId: string, applicationId?: string) {
+    this.pageIndex = 0;
+    this.hasNextPage = true;
+    this.appDataSource.data = [];
+    this.initialAppData = [];
+
     this.spinner.show();
+    const offset = this.pageIndex * this.pageSize;
 
     this.scheduler
-      .fetchAppList(partitionName, queueName)
+      .fetchAppList(partitionId, queueId, offset, this.pageSize)
       .pipe(
         finalize(() => {
           this.spinner.hide();
         })
       )
-      .subscribe((data) => {
-        this.initialAppData = data;
-        this.appDataSource.data = data;
+      .subscribe({
+        next: (data) => {
+          if (data.length === 0) {
+            this.hasNextPage = false;
+            return;
+          }
+          this.initialAppData = data;
+          this.appDataSource.data = data;
+          this.hasNextPage = data.length === this.pageSize;
 
-        const row = this.initialAppData.find((app) => app.applicationId === applicationId);
-        if (row) {
-          this.toggleRowSelection(row);
-        }
+          const row = this.initialAppData.find((app) => app.applicationId === applicationId);
+          if (row) {
+            this.toggleRowSelection(row);
+          }
+        },
       });
   }
 
@@ -349,8 +365,11 @@ export class AppsHistoryViewComponent implements OnInit {
     }
   }
 
-  onPaginatorChanged() {
+  onPaginatorChanged(event: any) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
     this.removeRowSelection();
+    this.fetchAppListForPartitionAndQueue(this.partitionSelected, this.leafQueueSelected);
   }
 
   isAppDataSourceEmpty() {
@@ -359,27 +378,31 @@ export class AppsHistoryViewComponent implements OnInit {
 
   onClearSearch() {
     this.searchText = '';
+    this.pageIndex = 0;
     this.removeRowSelection();
-    this.appDataSource.data = this.initialAppData;
+    this.fetchAppListForPartitionAndQueue(this.partitionSelected, this.leafQueueSelected);
   }
 
   onSearchAppData() {
     const searchTerm = this.searchText.trim().toLowerCase();
+    this.pageIndex = 0;
+    this.removeRowSelection();
 
     if (searchTerm) {
-      this.removeRowSelection();
       this.appDataSource.data = this.initialAppData.filter((data) =>
         data.applicationId.toLowerCase().includes(searchTerm)
       );
+      this.hasNextPage = false;
     } else {
-      this.onClearSearch();
+      this.fetchAppListForPartitionAndQueue(this.partitionSelected, this.leafQueueSelected);
     }
   }
 
   onPartitionSelectionChanged(selected: MatSelectChange) {
     if (selected.value !== '') {
+      const partitionId = selected.value;
       this.searchText = '';
-      this.partitionSelected = selected.value;
+      this.partitionSelected = partitionId;
       this.appDataSource.data = [];
       this.removeRowSelection();
       this.clearQueueSelection();
@@ -445,5 +468,45 @@ export class AppsHistoryViewComponent implements OnInit {
 
   toggle() {
     this.detailToggle = !this.detailToggle;
+  }
+
+  onScroll(event: any): void {
+    const element = event.target;
+    const atBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 1;
+
+    if (atBottom && !this.isLoading && this.hasNextPage) {
+      this.pageIndex++;
+      this.loadMoreData();
+    }
+  }
+
+  loadMoreData(): void {
+    if (!this.partitionSelected || !this.leafQueueSelected) {
+      return;
+    }
+
+    this.isLoading = true;
+    const offset = this.pageIndex * this.pageSize;
+
+    this.scheduler
+      .fetchAppList(this.partitionSelected, this.leafQueueSelected, this.pageSize, offset)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          if (data.length === 0) {
+            this.hasNextPage = false;
+            return;
+          }
+
+          // Append new data to existing data
+          this.appDataSource.data = [...this.appDataSource.data, ...data];
+          this.initialAppData = this.appDataSource.data;
+          this.hasNextPage = data.length === this.pageSize;
+        },
+      });
   }
 }

@@ -17,6 +17,7 @@
  */
 
 export class QueueInfo {
+  id: string = '';
   queueName: string = '';
   status: string = '';
   partitionName: string = '';

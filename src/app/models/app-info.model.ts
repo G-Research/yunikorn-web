@@ -24,6 +24,7 @@ export class AppInfo {
   isSelected = false;
 
   constructor(
+    public id: string,
     public applicationId: string,
     public usedResource: string,
     public pendingResource: string,

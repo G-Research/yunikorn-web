@@ -43,7 +43,7 @@ export class EnvconfigService {
     this.uiHostname = window.location.hostname;
     this.uiPort = window.location.port;
     this.envConfig = {
-      localSchedulerWebAddress: 'http://localhost:9889',
+      localSchedulerWebAddress: 'http://localhost:8989',
     };
   }
 
@@ -87,5 +87,4 @@ export class EnvconfigService {
     }
     return null;
   }
-  
 }

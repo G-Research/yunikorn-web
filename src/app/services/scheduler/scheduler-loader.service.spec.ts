@@ -87,7 +87,7 @@ describe('SchedulerServiceLoader', () => {
     const result = await serviceLoader.initializeSchedulerService(remoteComponentConfig);
 
     expect(ModuleFederationWrapper.loadRemoteModule).toHaveBeenCalledWith(remoteComponentConfig);
-    expect(console.error).toHaveBeenCalledWith('SchedulerService not found.');
+    expect(console.error).toHaveBeenCalledWith('SchedulerService not found in remote module');
     expect(result).toBeNull();
   });
 
