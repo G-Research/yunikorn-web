@@ -18,6 +18,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CommonUtil } from '@app/utils/common.util';
 import { ApiErrorInfo } from '@app/models/api-error-info.model';
 
 @Component({
@@ -34,6 +35,7 @@ export class ErrorViewComponent implements OnInit {
   ngOnInit() {
     this.apiError = window.history.state;
     this.lastActiveUrl = this.activatedRoute.snapshot.queryParams['last'];
+    CommonUtil.setStoredQueueAndPartition('');
   }
 
   retryLastActiveUrlAgain() {
