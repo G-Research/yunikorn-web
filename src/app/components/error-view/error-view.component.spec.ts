@@ -19,17 +19,32 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatCardModule} from '@angular/material/card';
 import {RouterTestingModule} from '@angular/router/testing';
+import { ActivatedRoute } from '@angular/router';
 
 import {ErrorViewComponent} from './error-view.component';
+import {CommonUtil} from '@app/utils/common.util';
+import { MockNgxSpinnerService } from '@app/testing/mocks';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 describe('ErrorViewComponent', () => {
   let component: ErrorViewComponent;
   let fixture: ComponentFixture<ErrorViewComponent>;
 
-  beforeAll(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [MatCardModule, RouterTestingModule],
       declarations: [ErrorViewComponent],
+      providers: [
+        { provide: NgxSpinnerService, useValue: MockNgxSpinnerService },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParams: {}
+            }
+          }
+        }
+      ],
     }).compileComponents();
   });
 
@@ -41,5 +56,11 @@ describe('ErrorViewComponent', () => {
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should clear stored queue and partition on init', () => {
+    const setStoredQueueSpy = spyOn(CommonUtil, 'setStoredQueueAndPartition');
+    component.ngOnInit();
+    expect(setStoredQueueSpy).toHaveBeenCalledWith('');
   });
 });
