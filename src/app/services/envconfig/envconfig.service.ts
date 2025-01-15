@@ -34,14 +34,8 @@ export function envConfigFactory(envConfig: EnvconfigService) {
 })
 export class EnvconfigService {
   private envConfig: EnvConfig;
-  private uiProtocol: string;
-  private uiHostname: string;
-  private uiPort: string;
 
   constructor(private httpClient: HttpClient) {
-    this.uiProtocol = window.location.protocol;
-    this.uiHostname = window.location.hostname;
-    this.uiPort = window.location.port;
     this.envConfig = {
       localSchedulerWebAddress: 'http://localhost:8989',
     };
@@ -57,11 +51,7 @@ export class EnvconfigService {
   }
 
   getSchedulerWebAddress() {
-    if (!environment.production) {
-      return this.envConfig.localSchedulerWebAddress;
-    }
-
-    return `${this.uiProtocol}//${this.uiHostname}:${this.uiPort}`;
+    return this.envConfig.localSchedulerWebAddress;
   }
 
   getAllocationsDrawerComponentRemoteConfig(): LoadRemoteModuleEsmOptions | null {
