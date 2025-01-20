@@ -1,6 +1,6 @@
 {
   "localSchedulerWebAddress": "http://localhost:30001",
-  "moduleFederationRemoteEntry": "http://localhost:3100/remoteEntry.js",
+  "moduleFederationRemoteEntry": "http://localhost:8989/remoteEntry.js",
   "allocationsDrawerRemoteComponent": "./AllocationsDrawerComponent",
   "schedulerServiceRemote": "./SchedulerService"
 }
