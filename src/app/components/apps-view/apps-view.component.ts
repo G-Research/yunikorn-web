@@ -215,7 +215,7 @@ export class AppsViewComponent implements OnInit {
     this.spinner.show();
 
     this.scheduler
-      .fetchSchedulerQueues(CommonUtil.getNameFromId(partitionId, this.partitionList))
+      .fetchSchedulerQueues(partitionId)
       .pipe(
         finalize(() => {
           this.spinner.hide();
