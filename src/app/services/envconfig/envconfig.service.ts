@@ -48,6 +48,11 @@ export class EnvconfigService {
   }
 
   loadEnvConfig(): Promise<void> {
+    if (environment.production) {
+      console.log('environment.production', environment.production);
+      return Promise.resolve();
+    }
+
     return new Promise((resolve) => {
       this.httpClient.get<EnvConfig>(ENV_CONFIG_JSON_URL).subscribe((data) => {
         this.envConfig = data;
@@ -65,39 +70,45 @@ export class EnvconfigService {
   }
 
   getAllocationsDrawerComponentRemoteConfig(): LoadRemoteModuleEsmOptions | null {
+    if (environment.production) {
+      return {
+        type: 'module',
+        remoteEntry: this.getSchedulerWebAddress() + '/remoteEntry.js',
+        exposedModule: './AllocationsDrawerComponent',
+      };
+    }
+
     if (
       this.envConfig.allocationsDrawerRemoteComponent &&
-      this.envConfig.moduleFederationRemoteEntry && !environment.production
-    )
+      this.envConfig.moduleFederationRemoteEntry
+    ) {
       return {
         type: 'module',
         remoteEntry: this.envConfig.moduleFederationRemoteEntry,
         exposedModule: this.envConfig.allocationsDrawerRemoteComponent,
       };
-    else {
-      return {
-        type: 'module',
-        remoteEntry: this.getSchedulerWebAddress() + '/remoteEntry.js',
-        exposedModule: './AllocationsDrawerComponent',
-      }
     }
+
     return null;
   }
 
   getSchedulerServiceRemoteConfig(): LoadRemoteModuleEsmOptions | null {
-    if (this.envConfig.schedulerServiceRemote && this.envConfig.moduleFederationRemoteEntry && !environment.production) {
+    if (environment.production) {
+      return {
+        type: 'module',
+        remoteEntry: this.getSchedulerWebAddress() + '/remoteEntry.js',
+        exposedModule: './SchedulerService',
+      };
+    }
+
+    if (this.envConfig.moduleFederationRemoteEntry && this.envConfig.schedulerServiceRemote) {
       return {
         type: 'module',
         remoteEntry: this.envConfig.moduleFederationRemoteEntry,
         exposedModule: this.envConfig.schedulerServiceRemote,
       };
-    } else {
-      return {
-        type: 'module',
-        remoteEntry: this.getSchedulerWebAddress() + '/remoteEntry.js',
-        exposedModule: './SchedulerService',
-      }
     }
+
     return null;
   }
 }
