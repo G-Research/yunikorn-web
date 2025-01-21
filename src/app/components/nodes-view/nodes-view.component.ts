@@ -118,9 +118,7 @@ export class NodesViewComponent implements OnInit {
           });
 
           this.partitionSelected = CommonUtil.getStoredPartition(list[0].id);
-          this.fetchNodeListForPartition(
-            CommonUtil.getNameFromId(this.partitionSelected, this.partitionList)
-          );
+          this.fetchNodeListForPartition(this.partitionSelected);
         } else {
           this.partitionList = [new PartitionInfo('-- Select --', '', '')];
           this.partitionSelected = '';
@@ -130,12 +128,12 @@ export class NodesViewComponent implements OnInit {
       });
   }
 
-  fetchNodeListForPartition(partitionName: string) {
+  fetchNodeListForPartition(partitionId: string) {
     this.spinner.show();
     this.nodeDataSource.data = [];
 
     this.scheduler
-      .fetchNodeList(partitionName)
+      .fetchNodeList(partitionId)
       .pipe(
         finalize(() => {
           this.spinner.hide();
