@@ -40,7 +40,9 @@ export class SchedulerService {
     const queuesUrl = `${this.envConfig.getSchedulerWebAddress()}/api/v1/partition/${partitionId}/queues`;
 
     return this.httpClient.get(queuesUrl).pipe(
-      map((data: any) => {
+      map((dataWrapped: any) => {
+        let data = dataWrapped;
+        if (Array.isArray(dataWrapped)) data = dataWrapped[0];
         if (data && !CommonUtil.isEmpty(data)) {
           let rootQueue = new QueueInfo();
           rootQueue.queueName = data.queuename;
