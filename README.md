@@ -43,7 +43,9 @@ To manage our node packages, we've chosen pnpm. Simply execute the command `pnpm
 
 #### Environment configuration for [UHS](https://github.com/g-Research/unicorn-history-server/)
 
-To establish a connection between the web UI and UHS, you need to configure the `src/assets/config/envconfig.json` file with the following values:
+YuniKorn Web for UHS is built and served directly from the UHS server in production. No additional configuration is required for production deployments.
+
+For local development only, you need to configure the `src/assets/config/envconfig.json` file with the following values:
 
 ```json
 {
@@ -54,7 +56,7 @@ To establish a connection between the web UI and UHS, you need to configure the 
 }
 ```
 
-Changes will connect the web UI to the UHS instance running on `http://localhost:3100` and use the YuniKorn API that is running on `http://localhost:30001`.
+These settings will connect the web UI to the UHS instance running on `http://localhost:3100` and use the YuniKorn API that is running on `http://localhost:30001`.
 
 For details on how to run UHS, please refer to the [UHS README](https://github.com/g-Research/unicorn-history-server/blob/main/README.md).
 
