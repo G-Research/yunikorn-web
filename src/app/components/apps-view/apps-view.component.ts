@@ -269,10 +269,8 @@ export class AppsViewComponent implements OnInit {
 
   fetchAppListForPartitionAndQueue(partitionId: string, queueId: string, applicationId?: string) {
     this.spinner.show();
-    const partitionName = CommonUtil.getNameFromId(partitionId, this.partitionList);
-    const queueName = CommonUtil.getNameFromId(queueId, this.leafQueueList);
     this.scheduler
-      .fetchAppList(partitionName, queueName)
+      .fetchAppList(partitionId, queueId)
       .pipe(
         finalize(() => {
           this.spinner.hide();
@@ -375,9 +373,8 @@ export class AppsViewComponent implements OnInit {
 
   onPartitionSelectionChanged(selected: MatSelectChange) {
     if (selected.value !== '') {
-      const partitionId = selected.value;
       this.searchText = '';
-      this.partitionSelected = CommonUtil.getNameFromId(partitionId, this.partitionList);
+      this.partitionSelected = selected.value;
       this.appDataSource.data = [];
       this.removeRowSelection();
       this.clearQueueSelection();
