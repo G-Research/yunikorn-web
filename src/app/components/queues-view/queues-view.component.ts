@@ -106,10 +106,9 @@ export class QueuesViewComponent implements OnInit {
 
   fetchSchedulerQueuesForPartition(partitionId: string) {
     this.spinner.show();
-    const partitionName = CommonUtil.getNameFromId(partitionId, this.partitionList);
 
     this.scheduler
-      .fetchSchedulerQueues(partitionName)
+      .fetchSchedulerQueues(partitionId)
       .pipe(
         finalize(() => {
           this.spinner.hide();

@@ -27,20 +27,22 @@ export class SchedulerService {
   ) {}
 
   fetchClusterList(): Observable<ClusterInfo[]> {
-    const clusterUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/clusters`;
+    const clusterUrl = `${this.envConfig.getSchedulerWebAddress()}/api/v1/clusters`;
     return this.httpClient.get(clusterUrl).pipe(map((data) => data as ClusterInfo[]));
   }
 
   fetchPartitionList(): Observable<Partition[]> {
-    const partitionUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/partitions`;
+    const partitionUrl = `${this.envConfig.getSchedulerWebAddress()}/api/v1/partitions`;
     return this.httpClient.get(partitionUrl).pipe(map((data) => data as Partition[]));
   }
 
   fetchSchedulerQueues(partitionId: string): Observable<any> {
-    const queuesUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/partition/${partitionId}/queues`;
+    const queuesUrl = `${this.envConfig.getSchedulerWebAddress()}/api/v1/partition/${partitionId}/queues`;
 
     return this.httpClient.get(queuesUrl).pipe(
-      map((data: any) => {
+      map((dataWrapped: any) => {
+        let data = dataWrapped;
+        if (Array.isArray(dataWrapped)) data = dataWrapped[0];
         if (data && !CommonUtil.isEmpty(data)) {
           let rootQueue = new QueueInfo();
           rootQueue.queueName = data.queuename;
@@ -143,7 +145,7 @@ export class SchedulerService {
   }
 
   fetchAppHistory(): Observable<HistoryInfo[]> {
-    const appHistoryUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/history/apps`;
+    const appHistoryUrl = `${this.envConfig.getSchedulerWebAddress()}/api/v1/history/apps`;
     return this.httpClient.get(appHistoryUrl).pipe(
       map((data: any) => {
         const result: HistoryInfo[] = [];
@@ -162,7 +164,7 @@ export class SchedulerService {
   }
 
   fetchContainerHistory(): Observable<HistoryInfo[]> {
-    const containerHistoryUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/history/containers`;
+    const containerHistoryUrl = `${this.envConfig.getSchedulerWebAddress()}/api/v1/history/containers`;
     return this.httpClient.get(containerHistoryUrl).pipe(
       map((data: any) => {
         const result: HistoryInfo[] = [];
@@ -181,7 +183,7 @@ export class SchedulerService {
   }
 
   fetchNodeList(partitionId: string): Observable<NodeInfo[]> {
-    const nodesUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/partition/${partitionId}/nodes`;
+    const nodesUrl = `${this.envConfig.getSchedulerWebAddress()}/api/v1/partition/${partitionId}/nodes`;
 
     return this.httpClient.get(nodesUrl).pipe(
       map((data: any) => {
@@ -248,14 +250,14 @@ export class SchedulerService {
   }
 
   fetchNodeUtilizationsInfo(): Observable<NodeUtilizationsInfo[]> {
-    const nodeUtilizationsUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/scheduler/node-utilizations`;
+    const nodeUtilizationsUrl = `${this.envConfig.getSchedulerWebAddress()}/api/v1/scheduler/node-utilizations`;
     return this.httpClient
       .get(nodeUtilizationsUrl)
       .pipe(map((data: any) => data as NodeUtilizationsInfo[]));
   }
 
   fecthHealthchecks(): Observable<SchedulerHealthInfo> {
-    const healthCheckUrl = `${this.envConfig.getSchedulerWebAddress()}/ws/v1/scheduler/healthcheck`;
+    const healthCheckUrl = `${this.envConfig.getSchedulerWebAddress()}/api/v1/scheduler/healthcheck`;
     return this.httpClient
       .get(healthCheckUrl)
       .pipe(map((data: any) => data as SchedulerHealthInfo));

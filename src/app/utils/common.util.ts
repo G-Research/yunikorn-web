@@ -179,11 +179,6 @@ export class CommonUtil {
     return defaultValue;
   }
 
-  static getNameFromId(id: string, list: PartitionInfo[] | DropdownItem[]): string {
-    const object = list.find((p) => p.id === id);
-    return object ? object.name : '';
-  }
-
   static setStoredQueueAndPartition(partition: string, queue = '') {
     if (partition) localStorage.setItem('selectedPartitionAndQueue', `${partition}:${queue}`);
     else localStorage.removeItem('selectedPartitionAndQueue');
